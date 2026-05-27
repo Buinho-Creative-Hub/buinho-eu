@@ -1,0 +1,195 @@
+/* ==========================================================================
+   buinho.eu — Design System Tokens
+   Source: Buinho Brand Guidelines (Option B v2)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Brand colours */
+  --buinho-blue:   #2364ff;
+  --buinho-red:    #ff5050;
+  --buinho-yellow: #ffc850;
+  --buinho-black:  #010101;
+  --buinho-white:  #fafafa;
+
+  /* Tints */
+  --buinho-blue-50:  #eaf0ff;
+  --buinho-blue-100: #c8d7ff;
+  --buinho-blue-700: #1b4bc4;
+
+  --buinho-ink-900: #010101;
+  --buinho-ink-700: #2b2b2b;
+  --buinho-ink-500: #4a4a4a;
+  --buinho-ink-300: #9a9a9a;
+  --buinho-ink-100: #d9d9d9;
+  --buinho-ink-50:  #f1f1f1;
+
+  /* Option B v2 */
+  --b2-soft-grey:  #f0ede8;
+  --b2-footer-bg:  #fafafa;
+  --b2-salmon:     #f4956a;
+  --b2-salmon-50:  #fdf0ea;
+  --b2-salmon-900: #a25530;
+  --b2-mint:       #7dc4a8;
+  --b2-mint-50:    #eaf5f1;
+  --b2-mint-900:   #2f6a55;
+  --b2-blue-50:    #ebf1ff;
+  --b2-text:       #1a1a1a;
+  --b2-text-muted: #555;
+  --b2-text-faint: #888;
+  --b2-radius:     8px;
+  --b2-radius-pill:999px;
+
+  /* Typography */
+  --font-sans: 'Asap', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  /* Layout */
+  --page-max: 1200px;
+  --gutter: 48px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--b2-text);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { margin: 0; }
+p { margin: 0; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; padding: 0; margin: 0; }
+
+.container {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Photo placeholder */
+.bui-photo {
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0,0,0,0.35);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--b2-radius);
+}
+.bui-photo--16x9 { aspect-ratio: 16/9; }
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--b2-radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  background: var(--b2-blue-50);
+  color: var(--buinho-blue);
+  white-space: nowrap;
+}
+.badge--red    { background: var(--b2-salmon-50); color: var(--b2-salmon-900); }
+.badge--yellow { background: var(--b2-mint-50);   color: var(--b2-mint-900); }
+
+/* Status dot */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: var(--b2-radius-pill);
+  background: var(--b2-salmon-50);
+  color: var(--b2-salmon-900);
+}
+.status::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--b2-salmon);
+  box-shadow: 0 0 0 3px rgba(244,149,106,0.25);
+  flex-shrink: 0;
+}
+.status--active {
+  background: var(--b2-mint-50);
+  color: var(--b2-mint-900);
+}
+.status--active::before {
+  background: var(--b2-mint);
+  box-shadow: 0 0 0 3px rgba(125,196,168,0.25);
+}
+.status--completed, .status--done {
+  background: var(--buinho-ink-50);
+  color: var(--b2-text-muted);
+}
+.status--completed::before, .status--done::before {
+  background: var(--buinho-ink-300);
+  box-shadow: none;
+}
+.status--pending {
+  background: var(--buinho-blue-50);
+  color: var(--buinho-blue);
+}
+.status--pending::before {
+  background: var(--buinho-blue);
+  box-shadow: 0 0 0 3px rgba(35,100,255,0.15);
+}
+
+/* Flag chip */
+.flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--buinho-ink-50);
+  color: var(--b2-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+/* Section heading row */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--buinho-ink-500);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.section-eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}
+.section-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--buinho-blue);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.section-link:hover { text-decoration: underline; }
