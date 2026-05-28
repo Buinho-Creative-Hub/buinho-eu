@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { PROJECTS, PROGRAMME_LABELS } from '../data/projects'
+import { fetchProjectCoverMap } from '../api/client'
 import './Projects.css'
 
 const FILTERS = [
@@ -24,6 +25,12 @@ const CARD_ACCENT = {
 
 export default function Projects() {
   const [active, setActive] = useState('all')
+  const [covers, setCovers] = useState({})
+
+  useEffect(() => {
+    fetchProjectCoverMap().then(setCovers)
+  }, [])
+
   const filtered = active === 'all' ? PROJECTS : PROJECTS.filter(p => p.programmeKey === active)
 
   return (
@@ -33,7 +40,8 @@ export default function Projects() {
           <div className="section-eyebrow">Portfolio</div>
           <h1 className="projects-header__title">Our European projects</h1>
           <p className="projects-header__sub">
-            Nine funded projects in education, culture, and digital fabrication — led from Messejana, Portugal.
+            Nine funded projects in education, culture, and digital fabrication —
+            led from Messejana, Portugal.
           </p>
         </div>
       </header>
@@ -55,9 +63,24 @@ export default function Projects() {
           <div className="projects-grid">
             {filtered.map(p => (
               <article key={p.slug} className={`card ${CARD_ACCENT[p.programmeKey] || ''}`}>
-                <div className="bui-photo bui-photo--16x9 card__photo">
-                  <span>{p.title}</span>
-                </div>
+                {/* Foto de capa real se existir, placeholder se não */}
+                {covers[p.slug] ? (
+                  <div
+                    className="card__photo"
+                    style={{
+                      backgroundImage: `url(${covers[p.slug]})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      aspectRatio: '16/9',
+                    }}
+                    role="img"
+                    aria-label={p.title}
+                  />
+                ) : (
+                  <div className="bui-photo bui-photo--16x9 card__photo">
+                    <span>{p.title}</span>
+                  </div>
+                )}
                 <div className="card__body">
                   <span className={`badge ${PROGRAMME_BADGE[p.programmeKey] || ''}`}>
                     {p.programme} {p.action}
