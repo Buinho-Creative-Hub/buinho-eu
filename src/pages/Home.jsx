@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { PROJECTS } from '../data/projects'
+import { fetchProjectCoverMap } from '../api/client'
 import './Home.css'
 
 const PROGRAMME_BADGE = {
@@ -23,6 +25,12 @@ const STATS = [
 const featured = PROJECTS.filter(p => p.featured)
 
 export default function Home() {
+  const [covers, setCovers] = useState({})
+
+  useEffect(() => {
+    fetchProjectCoverMap().then(setCovers)
+  }, [])
+
   return (
     <main>
       {/* HERO */}
@@ -78,9 +86,23 @@ export default function Home() {
           <div className="cards">
             {featured.map(p => (
               <article key={p.slug} className={`card ${CARD_ACCENT[p.programmeKey] || ''}`}>
-                <div className="bui-photo bui-photo--16x9 card__photo">
-                  <span>{p.title} · photo placeholder</span>
-                </div>
+                {covers[p.slug] ? (
+                  <div
+                    className="card__photo"
+                    style={{
+                      backgroundImage: `url(${covers[p.slug]})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      aspectRatio: '16/9',
+                    }}
+                    role="img"
+                    aria-label={p.title}
+                  />
+                ) : (
+                  <div className="bui-photo bui-photo--16x9 card__photo">
+                    <span>{p.title} · photo placeholder</span>
+                  </div>
+                )}
                 <div className="card__body">
                   <span className={`badge ${PROGRAMME_BADGE[p.programmeKey] || ''}`}>
                     {p.programme} {p.action}
