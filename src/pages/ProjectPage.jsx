@@ -1,5 +1,7 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { getProject } from '../data/projects'
+import { fetchProjectPhotos, uploadUrl } from '../api/client'
 import './ProjectPage.css'
 
 const PROGRAMME_BADGE = {
@@ -11,6 +13,17 @@ const PROGRAMME_BADGE = {
 export default function ProjectPage() {
   const { slug } = useParams()
   const project = getProject(slug)
+  const [photos, setPhotos] = useState([])
+  const [photosLoading, setPhotosLoading] = useState(true)
+
+  useEffect(() => {
+    setPhotosLoading(true)
+    fetchProjectPhotos(slug).then(data => {
+      setPhotos(data)
+      setPhotosLoading(false)
+    })
+  }, [slug])
+
   if (!project) return <Navigate to="/" replace />
 
   const badgeMod = PROGRAMME_BADGE[project.programmeKey] || ''
@@ -106,25 +119,40 @@ export default function ProjectPage() {
         </div>
       </section>
 
-      {/* GALLERY */}
-      <section className="gallery">
-        <div className="container">
-          <div className="section-head" style={{ marginBottom: 40 }}>
-            <div>
-              <div className="section-eyebrow">Gallery</div>
-              <h2>From the project.</h2>
+      {/* GALLERY — real photos from CMS */}
+      {!photosLoading && photos.length > 0 && (
+        <section className="gallery">
+          <div className="container">
+            <div className="section-head" style={{ marginBottom: 40 }}>
+              <div>
+                <div className="section-eyebrow">Gallery</div>
+                <h2>From the project.</h2>
+              </div>
+              {photos.length > 5 && (
+                <span className="section-link">{photos.length} photos</span>
+              )}
             </div>
-            <a className="section-link">View all photos →</a>
+            <div className="gallery-grid">
+              {photos.slice(0, 5).map((photo, i) => (
+                <div
+                  key={photo.id}
+                  className={`gallery-photo gallery-photo--g${i + 1}`}
+                  style={{
+                    backgroundImage: `url(${uploadUrl(photo.filename)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  {/* caption acessível mas invisível visualmente */}
+                  {photo.caption_en && (
+                    <span className="sr-only">{photo.caption_en}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="gallery-grid">
-            <div className="bui-photo gallery-photo gallery-photo--g1"><span>Photo · landscape</span></div>
-            <div className="bui-photo gallery-photo gallery-photo--g2"><span>Photo · square</span></div>
-            <div className="bui-photo gallery-photo gallery-photo--g3"><span>Photo · square</span></div>
-            <div className="bui-photo gallery-photo gallery-photo--g4"><span>Photo · portrait</span></div>
-            <div className="bui-photo gallery-photo gallery-photo--g5"><span>Photo · portrait</span></div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CONSORTIUM */}
       <section className="consortium">
