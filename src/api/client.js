@@ -50,3 +50,35 @@ export async function fetchProjectCoverMap() {
 export function uploadUrl(filename) {
   return `${API_BASE}/uploads/${filename}`
 }
+
+/**
+ * Busca a lista de projectos do CMS (estado active/submitted) e mapeia
+ * para a forma de card usada na página de Projectos.
+ * Devolve [] em caso de erro — a página funciona na mesma só com os estáticos.
+ */
+export async function fetchCmsProjects() {
+  try {
+    const res = await fetch(`${API_BASE}/api/projects`)
+    if (!res.ok) return []
+    const rows = await res.json()
+    return rows.map((p) => {
+      const prog = (p.program || '').toLowerCase()
+      let programmeKey = 'erasmus'
+      if (prog.includes('esc') || prog.includes('solidarity')) programmeKey = 'esc'
+      else if (prog.includes('creative') || prog.includes('criativa')) programmeKey = 'creative-europe'
+      return {
+        slug: p.slug,
+        title: p.title_pt || p.title_en || p.slug,
+        subtitle: p.desc_pt || p.desc_en || '',
+        programme: p.program || '',
+        action: '',
+        programmeKey,
+        period: p.dates || '',
+        countries: [],
+        _fromCms: true,
+      }
+    })
+  } catch {
+    return []
+  }
+}
