@@ -45,7 +45,7 @@ export default function Home() {
             Nine European-funded projects in education, culture and digital fabrication —
             with fifteen partners across six countries.
           </p>
-          <Link to="/" className="hero__cta">
+          <Link to="/projects" className="hero__cta">
             Explore our projects <span>→</span>
           </Link>
         </div>
@@ -81,7 +81,7 @@ export default function Home() {
               <div className="section-eyebrow">Featured</div>
               <h2 className="featured__title">Featured projects</h2>
             </div>
-            <Link to="/" className="section-link">View all projects →</Link>
+            <Link to="/projects" className="section-link">View all projects →</Link>
           </div>
           <div className="cards">
             {featured.map(p => (
