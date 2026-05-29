@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './Footer.css'
 
 const EUFlag = () => (
@@ -27,11 +28,11 @@ export default function Footer() {
           <div>
             <div className="footer__heading">Navigate</div>
             <div className="footer__links">
-              <a href="/">All projects</a>
-              <a href="/">Programmes</a>
-              <a href="/">Partners</a>
+              <Link to="/projects">All projects</Link>
+              <Link to="/projects">Programmes</Link>
+              <Link to="/projects">Partners</Link>
               <a href="https://buinho.pt" target="_blank" rel="noreferrer">About Buinho</a>
-              <a href="/contact">Press kit</a>
+              <Link to="/contact">Press kit</Link>
             </div>
           </div>
           <div>
