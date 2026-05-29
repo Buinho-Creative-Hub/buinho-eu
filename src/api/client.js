@@ -9,7 +9,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'https://api.buinho.eu'
  */
 export async function fetchProjectPhotos(slug) {
   try {
-    const res = await fetch(`${API_BASE}/api/projects/${slug}/photos`)
+    const res = await fetch(`${API_BASE}/api/projects/${slug}/photos`, { cache: 'no-store' })
     if (!res.ok) return []
     return await res.json()
   } catch {
@@ -24,7 +24,7 @@ export async function fetchProjectPhotos(slug) {
  */
 export async function fetchProjectCoverMap() {
   try {
-    const res = await fetch(`${API_BASE}/api/projects`)
+    const res = await fetch(`${API_BASE}/api/projects`, { cache: 'no-store' })
     if (!res.ok) return {}
     const projects = await res.json()
 
@@ -58,7 +58,7 @@ export function uploadUrl(filename) {
  */
 export async function fetchCmsProjects() {
   try {
-    const res = await fetch(`${API_BASE}/api/projects`)
+    const res = await fetch(`${API_BASE}/api/projects`, { cache: 'no-store' })
     if (!res.ok) return []
     const rows = await res.json()
     return rows.map((p) => {
