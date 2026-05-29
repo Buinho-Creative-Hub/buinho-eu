@@ -1,7 +1,6 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { getProject } from '../data/projects'
-import { fetchProjectPhotos, fetchCmsProjectBySlug, uploadUrl } from '../api/client'
+import { fetchProjectBySlug, fetchProjectPhotos, uploadUrl } from '../api/client'
 import './ProjectPage.css'
 
 const PROGRAMME_BADGE = {
@@ -12,28 +11,22 @@ const PROGRAMME_BADGE = {
 
 export default function ProjectPage() {
   const { slug } = useParams()
-  const staticProject = getProject(slug)
 
-  const [project, setProject] = useState(staticProject || null)
-  const [loading, setLoading] = useState(!staticProject)   // se não é estático, vamos buscar ao CMS
+  const [project, setProject] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [photos, setPhotos] = useState([])
 
-  // Fotos (sempre, vêm do CMS por slug)
   useEffect(() => {
-    fetchProjectPhotos(slug).then(setPhotos)
-  }, [slug])
-
-  // Se não está nos estáticos, tentar o CMS
-  useEffect(() => {
-    if (staticProject) return
     setLoading(true)
-    fetchCmsProjectBySlug(slug).then((cms) => {
-      if (cms) setProject(cms)
+    setNotFound(false)
+    fetchProjectBySlug(slug).then((p) => {
+      if (p) setProject(p)
       else setNotFound(true)
       setLoading(false)
     })
-  }, [slug, staticProject])
+    fetchProjectPhotos(slug).then(setPhotos)
+  }, [slug])
 
   if (loading) {
     return (
@@ -45,7 +38,6 @@ export default function ProjectPage() {
     )
   }
 
-  // Só redireciona se REALMENTE não existe (nem estático nem CMS)
   if (notFound || !project) return <Navigate to="/projects" replace />
 
   const badgeMod = PROGRAMME_BADGE[project.programmeKey] || ''
@@ -70,9 +62,11 @@ export default function ProjectPage() {
           <div className="projhead__meta">
             <span className={`badge ${badgeMod}`}>{project.programme} {project.action}</span>
             {project.period && <span className="projhead__years">{project.period}</span>}
-            <span className={`status ${statusMod}`}>
-              {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-            </span>
+            {project.status && (
+              <span className={`status ${statusMod}`}>
+                {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+              </span>
+            )}
             {project.ref && (
               <span className="projhead__ref">Ref. <strong>{project.ref}</strong></span>
             )}

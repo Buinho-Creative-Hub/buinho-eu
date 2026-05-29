@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { PROJECTS } from '../data/projects'
-import { fetchProjectCoverMap } from '../api/client'
+import { fetchProjects, fetchProjectCoverMap } from '../api/client'
 import './Home.css'
 
 const PROGRAMME_BADGE = {
@@ -22,12 +21,14 @@ const STATS = [
   { num: '6', label: 'Countries' },
 ]
 
-const featured = PROJECTS.filter(p => p.featured)
-
 export default function Home() {
   const [covers, setCovers] = useState({})
+  const [featured, setFeatured] = useState([])
 
   useEffect(() => {
+    fetchProjects().then((list) => {
+      setFeatured(list.filter(p => p.featured))
+    })
     fetchProjectCoverMap().then(setCovers)
   }, [])
 
@@ -111,7 +112,7 @@ export default function Home() {
                     <div className="card__title">{p.title}</div>
                     <div className="card__year">{p.period}</div>
                   </div>
-                  <p className="card__desc">{p.subtitle}</p>
+                  <p className="card__desc">{p.subtitle || p.description}</p>
                   <div className="card__footer">
                     <div className="flags">
                       {p.countries.map(c => <span key={c} className="flag">{c}</span>)}

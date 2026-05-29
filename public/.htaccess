@@ -1,0 +1,10 @@
+# SPA fallback para Apache (Webtuga) — todas as rotas servem index.html
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+# Não reescrever ficheiros/pastas que existem (assets, favicon…)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# Tudo o resto → index.html (React Router trata da rota)
+RewriteRule ^ index.html [L]

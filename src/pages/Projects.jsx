@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { PROJECTS, PROGRAMME_LABELS } from '../data/projects'
-import { fetchProjectCoverMap, fetchCmsProjects } from '../api/client'
+import { fetchProjects, fetchProjectCoverMap } from '../api/client'
 import './Projects.css'
 
 const FILTERS = [
@@ -26,21 +25,15 @@ const CARD_ACCENT = {
 export default function Projects() {
   const [active, setActive] = useState('all')
   const [covers, setCovers] = useState({})
-  const [projects, setProjects] = useState(PROJECTS)
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Fotos de capa (vêm do CMS por slug)
-    fetchProjectCoverMap().then(setCovers)
-
-    // Projectos do CMS: fundem-se com os estáticos.
-    // Os estáticos têm prioridade (conteúdo rico); só se acrescentam
-    // os projectos do CMS cujo slug ainda não existe nos estáticos.
-    fetchCmsProjects().then((cms) => {
-      if (!cms || cms.length === 0) return
-      const staticSlugs = new Set(PROJECTS.map(p => p.slug))
-      const novos = cms.filter(p => !staticSlugs.has(p.slug))
-      if (novos.length > 0) setProjects([...PROJECTS, ...novos])
+    fetchProjects().then((list) => {
+      setProjects(list)
+      setLoading(false)
     })
+    fetchProjectCoverMap().then(setCovers)
   }, [])
 
   const filtered = active === 'all'
@@ -74,46 +67,51 @@ export default function Projects() {
             ))}
           </div>
 
-          <div className="projects-grid">
-            {filtered.map(p => (
-              <article key={p.slug} className={`card ${CARD_ACCENT[p.programmeKey] || ''}`}>
-                {/* Foto de capa real se existir, placeholder se não */}
-                {covers[p.slug] ? (
-                  <div
-                    className="card__photo"
-                    style={{
-                      backgroundImage: `url(${covers[p.slug]})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      aspectRatio: '16/9',
-                    }}
-                    role="img"
-                    aria-label={p.title}
-                  />
-                ) : (
-                  <div className="bui-photo bui-photo--16x9 card__photo">
-                    <span>{p.title}</span>
-                  </div>
-                )}
-                <div className="card__body">
-                  <span className={`badge ${PROGRAMME_BADGE[p.programmeKey] || ''}`}>
-                    {p.programme} {p.action}
-                  </span>
-                  <div>
-                    <div className="card__title">{p.title}</div>
-                    <div className="card__year">{p.period}</div>
-                  </div>
-                  <p className="card__desc">{p.subtitle}</p>
-                  <div className="card__footer">
-                    <div className="flags">
-                      {p.countries.map(c => <span key={c} className="flag">{c}</span>)}
+          {loading ? (
+            <p style={{ padding: '40px 0', color: '#9e9e9a' }}>A carregar projectos…</p>
+          ) : filtered.length === 0 ? (
+            <p style={{ padding: '40px 0', color: '#9e9e9a' }}>Sem projectos nesta categoria.</p>
+          ) : (
+            <div className="projects-grid">
+              {filtered.map(p => (
+                <article key={p.slug} className={`card ${CARD_ACCENT[p.programmeKey] || ''}`}>
+                  {covers[p.slug] ? (
+                    <div
+                      className="card__photo"
+                      style={{
+                        backgroundImage: `url(${covers[p.slug]})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        aspectRatio: '16/9',
+                      }}
+                      role="img"
+                      aria-label={p.title}
+                    />
+                  ) : (
+                    <div className="bui-photo bui-photo--16x9 card__photo">
+                      <span>{p.title}</span>
                     </div>
-                    <Link to={`/projects/${p.slug}`} className="card__link">Learn more →</Link>
+                  )}
+                  <div className="card__body">
+                    <span className={`badge ${PROGRAMME_BADGE[p.programmeKey] || ''}`}>
+                      {p.programme} {p.action}
+                    </span>
+                    <div>
+                      <div className="card__title">{p.title}</div>
+                      <div className="card__year">{p.period}</div>
+                    </div>
+                    <p className="card__desc">{p.subtitle || p.description}</p>
+                    <div className="card__footer">
+                      <div className="flags">
+                        {p.countries.map(c => <span key={c} className="flag">{c}</span>)}
+                      </div>
+                      <Link to={`/projects/${p.slug}`} className="card__link">Learn more →</Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
