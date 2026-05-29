@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { PROJECTS, PROGRAMME_LABELS } from '../data/projects'
-import { fetchProjectCoverMap } from '../api/client'
+import { fetchProjectCoverMap, fetchCmsProjects } from '../api/client'
 import './Projects.css'
 
 const FILTERS = [
@@ -26,12 +26,26 @@ const CARD_ACCENT = {
 export default function Projects() {
   const [active, setActive] = useState('all')
   const [covers, setCovers] = useState({})
+  const [projects, setProjects] = useState(PROJECTS)
 
   useEffect(() => {
+    // Fotos de capa (vêm do CMS por slug)
     fetchProjectCoverMap().then(setCovers)
+
+    // Projectos do CMS: fundem-se com os estáticos.
+    // Os estáticos têm prioridade (conteúdo rico); só se acrescentam
+    // os projectos do CMS cujo slug ainda não existe nos estáticos.
+    fetchCmsProjects().then((cms) => {
+      if (!cms || cms.length === 0) return
+      const staticSlugs = new Set(PROJECTS.map(p => p.slug))
+      const novos = cms.filter(p => !staticSlugs.has(p.slug))
+      if (novos.length > 0) setProjects([...PROJECTS, ...novos])
+    })
   }, [])
 
-  const filtered = active === 'all' ? PROJECTS : PROJECTS.filter(p => p.programmeKey === active)
+  const filtered = active === 'all'
+    ? projects
+    : projects.filter(p => p.programmeKey === active)
 
   return (
     <main>
@@ -40,7 +54,7 @@ export default function Projects() {
           <div className="section-eyebrow">Portfolio</div>
           <h1 className="projects-header__title">Our European projects</h1>
           <p className="projects-header__sub">
-            Nine funded projects in education, culture, and digital fabrication —
+            Funded projects in education, culture, and digital fabrication —
             led from Messejana, Portugal.
           </p>
         </div>
