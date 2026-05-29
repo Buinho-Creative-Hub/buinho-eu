@@ -82,3 +82,49 @@ export async function fetchCmsProjects() {
     return []
   }
 }
+
+/**
+ * Busca UM projecto do CMS por slug e normaliza para a forma usada
+ * na página de detalhe. Campos que o CMS não tem ficam com defaults
+ * seguros (arrays vazios) para a página não rebentar.
+ * Parceiros: o CMS guarda como string "A, B, C" → converte em lista.
+ * Devolve null se não existir.
+ */
+export async function fetchCmsProjectBySlug(slug) {
+  try {
+    const res = await fetch(`${API_BASE}/api/projects/${slug}`, { cache: 'no-store' })
+    if (!res.ok) return null
+    const p = await res.json()
+    if (!p || p.error) return null
+    const prog = (p.program || '').toLowerCase()
+    let programmeKey = 'erasmus'
+    if (prog.includes('esc') || prog.includes('solidarity')) programmeKey = 'esc'
+    else if (prog.includes('creative') || prog.includes('criativa')) programmeKey = 'creative-europe'
+    const partnersList = (p.partners || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(name => ({ code: '', name, country: '', role: '' }))
+    return {
+      slug: p.slug,
+      title: p.title_pt || p.title_en || p.slug,
+      subtitle: p.desc_pt ? '' : '',   // descrição vai para o lead, não no subtítulo
+      description: p.desc_pt || p.desc_en || '',
+      programme: p.program || '',
+      action: '',
+      programmeKey,
+      period: p.dates || '',
+      status: p.status || 'submitted',
+      role: '',
+      ref: null,
+      budget: null,
+      buinhoBudget: null,
+      objectives: [],
+      outputs: [],
+      partners: partnersList,
+      _fromCms: true,
+    }
+  } catch {
+    return null
+  }
+}
