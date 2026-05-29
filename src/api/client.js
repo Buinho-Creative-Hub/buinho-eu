@@ -1,7 +1,7 @@
 // API client — buinho.eu frontend
-// Consome o CMS backend em buinho-eu-cms.onrender.com (ou api.buinho.eu quando CNAME estiver activo)
+// Consome o CMS backend em api.buinho.eu (Webtuga, produção)
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://buinho-eu-cms.onrender.com'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api.buinho.eu'
 
 /**
  * Busca as fotos de um projecto pelo slug.
