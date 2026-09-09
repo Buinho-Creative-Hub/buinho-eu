@@ -1,14 +1,267 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Buinho — European projects in education, culture and digital fabrication. A rural FabLab in Messejana, Portugal." />
-    <title>buinho.eu — European Projects</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>zingarelho — interactive visual prototype</title>
+<style>
+:root{
+  --ink:#111111; --paper:#f4f4f2; --white:#ffffff; --line:#deded9;
+  --blue:#2d5bff; --coral:#ff5a3c; --yellow:#ffc629; --mint:#4fd1b5; --lilac:#c9b5ff;
+  --ease:cubic-bezier(.2,.75,.2,1); --radius:26px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#e9e9e6}
+body{margin:0;color:var(--ink);font-family:Inter,Arial,Helvetica,sans-serif;background:#e9e9e6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+.shell{max-width:1540px;margin:0 auto;background:var(--white);min-height:100vh;box-shadow:0 10px 60px rgba(0,0,0,.07)}
+.header{height:78px;padding:0 42px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);z-index:50;transition:.3s}
+.header.scrolled{height:66px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;font-size:27px;letter-spacing:-.045em}
+.mark{width:34px;height:34px;position:relative;flex:none}
+.mark .z1{position:absolute;left:0;top:1px;width:26px;height:12px;background:var(--blue);border-bottom-left-radius:18px}
+.mark .z2{position:absolute;left:9px;top:7px;width:14px;height:27px;background:var(--blue);transform:skew(-31deg)}
+.mark .dot{position:absolute;right:0;bottom:1px;width:12px;height:12px;border-radius:50%;background:var(--coral)}
+.nav{display:flex;align-items:center;gap:29px;font-size:13px}
+.nav a{position:relative}
+.nav a:not(.pill)::after{content:"";position:absolute;left:0;bottom:-7px;height:1px;width:0;background:#111;transition:.25s}
+.nav a:hover::after{width:100%}
+.pill{background:#111;color:#fff;border-radius:999px;padding:11px 18px}
+.lang{font-size:12px;opacity:.65}
+.menu-btn{display:none;border:0;background:transparent;font-size:22px}
+
+.hero{display:grid;grid-template-columns:.82fr 1.18fr;min-height:690px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero-copy{padding:76px 34px 62px 58px;display:flex;flex-direction:column;justify-content:center;z-index:3}
+.kicker{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;line-height:1.45}
+h1{font-size:clamp(58px,6.2vw,104px);line-height:.88;letter-spacing:-.072em;margin:18px 0 25px;max-width:610px}
+.hero-copy p{font-size:17px;line-height:1.45;color:#555;max-width:430px;margin:0 0 28px}
+.actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid #111;background:white;border-radius:999px;padding:13px 19px;cursor:pointer;transition:.25s var(--ease);display:inline-flex;align-items:center;gap:12px}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:white}
+.btn:hover{transform:translateY(-3px)}
+.btn .arrow{font-size:20px;line-height:0}
+
+.hero-stage{position:relative;min-height:690px;overflow:hidden;background:#fff}
+.photo-main{position:absolute;left:29%;top:8%;width:54%;height:62%;object-fit:cover;border-radius:50%;z-index:4;filter:saturate(.96) contrast(1.03);box-shadow:0 10px 35px rgba(0,0,0,.08)}
+.photo-group{position:absolute;right:-4%;bottom:7%;width:38%;height:34%;object-fit:cover;border-radius:50% 0 0 50%;z-index:5}
+.g{position:absolute;transition:transform .9s var(--ease);will-change:transform}
+.g.blue{left:8%;top:0;width:40%;aspect-ratio:1.45;background:var(--blue);border-bottom-left-radius:100%;z-index:1}
+.g.coral{left:5%;bottom:-7%;width:44%;aspect-ratio:1;background:var(--coral);border-radius:50%;z-index:2}
+.g.yellow{right:15%;top:11%;width:21%;aspect-ratio:1;background:var(--yellow);border-radius:50%;z-index:6}
+.g.mint{right:-12%;top:10%;width:34%;aspect-ratio:1;background:var(--mint);border-radius:100% 0 0 0;z-index:2}
+.g.lilac{right:18%;bottom:-15%;width:31%;aspect-ratio:1;background:var(--lilac);border-radius:100% 100% 0 0;z-index:1}
+.g.slash{left:13%;top:45%;width:37%;height:18%;background:var(--blue);transform:rotate(-45deg);z-index:7}
+.hero-note{position:absolute;right:18px;top:44%;z-index:8;font-size:10px;letter-spacing:.16em;text-transform:uppercase;line-height:1.55;writing-mode:vertical-rl}
+
+.principles{display:grid;grid-template-columns:repeat(4,1fr);padding:0 42px;border-bottom:1px solid var(--line)}
+.principle{min-height:116px;padding:26px 18px;border-right:1px solid var(--line);display:flex;align-items:flex-end;gap:14px}
+.principle:last-child{border-right:0}
+.mini-shape{width:25px;height:25px;background:#111;flex:none}
+.mini-shape.circle{border-radius:50%} .mini-shape.slant{transform:rotate(-45deg);width:13px} .mini-shape.half{border-radius:0 0 25px 25px;height:14px} .mini-shape.stairs{clip-path:polygon(0 66%,33% 66%,33% 33%,66% 33%,66% 0,100% 0,100% 100%,0 100%)}
+.principle b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px}
+.principle span{font-size:13px;color:#666}
+
+.section{padding:88px 42px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:30px}
+.section h2{font-size:clamp(38px,4.5vw,68px);line-height:.95;letter-spacing:-.055em;margin:0;max-width:760px}
+.section-head p{max-width:360px;color:#666;line-height:1.45;margin:0}
+
+.course-viewport{position:relative}
+.course-track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(320px,1fr);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.course-track::-webkit-scrollbar{display:none}
+.course-card{scroll-snap-align:start;border:1px solid var(--line);background:#fff;min-height:430px;display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;transition:.35s var(--ease)}
+.course-card:hover{transform:translateY(-7px);box-shadow:0 18px 40px rgba(0,0,0,.08)}
+.course-img{height:235px;position:relative;overflow:hidden;background:#eee}
+.course-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.course-card:hover .course-img img{transform:scale(1.05)}
+.course-img::after{content:"";position:absolute;width:115px;height:115px;right:-20px;bottom:-25px;background:var(--accent,var(--blue));border-radius:100% 0 0 0;transition:.45s var(--ease)}
+.course-card:hover .course-img::after{transform:rotate(18deg) scale(1.15)}
+.course-body{padding:24px 23px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tag{font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.course-body h3{font-size:28px;line-height:1;letter-spacing:-.04em;margin:0 0 4px}
+.course-body p{margin:0;color:#666;line-height:1.42;font-size:14px}
+.card-arrow{margin-top:auto;align-self:flex-end;border:0;width:42px;height:42px;background:#111;color:#fff;border-radius:50%;font-size:20px;cursor:pointer}
+.track-controls{display:flex;gap:8px}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid #111;background:#fff;cursor:pointer;font-size:19px}
+
+.feature{display:grid;grid-template-columns:1fr 1.12fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);min-height:570px}
+.feature-copy{padding:70px 52px;display:flex;flex-direction:column;justify-content:center}
+.feature-copy h2{font-size:clamp(48px,5vw,82px);line-height:.9;letter-spacing:-.065em;margin:15px 0 22px}
+.feature-copy p{max-width:440px;color:#666;line-height:1.48}
+.feature-visual{position:relative;overflow:hidden;min-height:560px;background:#fafafa}
+.feature-visual img{position:absolute;left:20%;top:12%;width:58%;height:70%;object-fit:cover;border-radius:50%;z-index:4}
+.fq{position:absolute;will-change:transform;transition:transform .8s var(--ease)}
+.fq.blue{left:0;top:0;width:42%;height:42%;background:var(--blue);border-radius:0 0 100% 0}
+.fq.coral{right:4%;top:18%;width:27%;aspect-ratio:1;background:var(--coral);border-radius:50%}
+.fq.mint{right:0;bottom:0;width:44%;height:44%;background:var(--mint);border-radius:100% 0 0 0}
+.fq.yellow{left:9%;bottom:3%;width:24%;aspect-ratio:1;background:var(--yellow);border-radius:50%}
+.feature-caption{position:absolute;right:22px;bottom:28px;z-index:6;font-size:11px;line-height:1.5;text-transform:uppercase;letter-spacing:.12em}
+
+.motion{position:relative;background:#111;color:#fff;min-height:390px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:62px 52px}
+.motion h2{font-size:clamp(46px,5.1vw,82px);line-height:.92;letter-spacing:-.06em;margin:0;max-width:650px}
+.motion-copy p{color:#bbb;max-width:420px;line-height:1.5}
+.motion-art{position:relative;height:270px}
+.mg{position:absolute;transition:transform .8s var(--ease)}
+.mg.one{width:175px;height:175px;border-radius:50%;background:var(--blue);left:5%;top:30px}
+.mg.two{width:170px;height:85px;border-radius:0 0 100px 100px;background:var(--yellow);left:39%;top:15px}
+.mg.three{width:190px;height:75px;background:var(--coral);transform:rotate(-38deg);right:5%;top:90px}
+.mg.four{width:135px;height:135px;border-radius:100% 0 0 0;background:var(--mint);right:14%;bottom:0}
+
+.about{display:grid;grid-template-columns:1.1fr .9fr;gap:55px;padding:88px 52px 96px;align-items:center}
+.about h2{font-size:clamp(44px,4.5vw,72px);line-height:.96;letter-spacing:-.055em;margin:0 0 20px}
+.about p{color:#666;line-height:1.55;max-width:630px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:170px 170px;gap:10px;position:relative}
+.about-grid img{width:100%;height:100%;object-fit:cover}
+.about-grid .a1{border-radius:100% 0 0 0}
+.about-grid .a2{border-radius:0 0 100% 0}
+.about-grid .color{background:var(--lilac);border-radius:50%}
+.about-grid .shape-box{background:var(--blue);clip-path:polygon(0 0,100% 0,0 100%)}
+
+.footer{border-top:1px solid var(--line);padding:30px 42px 34px;display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:12px;color:#666}
+.footer .brand{color:#111;font-size:22px}
+
+.modal{position:fixed;inset:0;background:rgba(17,17,17,.46);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:200}
+.modal.open{display:flex}
+.modal-card{width:min(820px,100%);background:#fff;display:grid;grid-template-columns:.9fr 1.1fr;min-height:420px;position:relative;overflow:hidden;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+.modal-photo{position:relative;min-height:420px;background:var(--blue);overflow:hidden}
+.modal-photo img{width:100%;height:100%;object-fit:cover}
+.modal-photo::after{content:"";position:absolute;right:-50px;bottom:-50px;width:190px;height:190px;background:var(--coral);border-radius:50%}
+.modal-content{padding:48px 42px;display:flex;flex-direction:column;justify-content:center}
+.modal-content h3{font-size:45px;line-height:.94;letter-spacing:-.055em;margin:12px 0 18px}
+.modal-content p{color:#666;line-height:1.5}
+.close{position:absolute;right:17px;top:14px;border:0;background:#111;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;z-index:3}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:950px){
+  .header{padding:0 20px;height:66px} .brand{font-size:22px} .nav{display:none;position:absolute;top:66px;left:0;right:0;background:white;border-bottom:1px solid var(--line);padding:22px;flex-direction:column;align-items:flex-start} .nav.open{display:flex} .menu-btn{display:block}
+  .hero{grid-template-columns:1fr} .hero-copy{padding:52px 22px 18px} h1{font-size:clamp(54px,15vw,82px)} .hero-stage{min-height:510px} .photo-main{left:20%;top:8%;width:62%;height:66%} .photo-group{width:46%;height:32%}
+  .principles{grid-template-columns:1fr 1fr;padding:0 20px} .principle:nth-child(2){border-right:0} .principle{border-bottom:1px solid var(--line)}
+  .section{padding:68px 20px} .section-head{align-items:flex-start;flex-direction:column}
+  .course-track{grid-auto-columns:82vw}
+  .feature{grid-template-columns:1fr} .feature-copy{padding:58px 22px} .feature-visual{min-height:500px}
+  .motion{grid-template-columns:1fr;padding:56px 22px;gap:24px} .motion-art{height:250px}
+  .about{grid-template-columns:1fr;padding:70px 22px} .footer{padding:24px 20px;flex-direction:column;align-items:flex-start}
+}
+@media(max-width:560px){
+  .hero-copy p{font-size:15px} .hero-stage{min-height:420px} .photo-main{left:19%;top:10%;width:67%;height:63%} .photo-group{right:-12%;bottom:5%;width:52%} .g.yellow{right:8%;top:5%;width:25%} .hero-note{display:none}
+  .principles{grid-template-columns:1fr} .principle{border-right:0}
+  .course-track{grid-auto-columns:88vw} .course-img{height:215px}
+  .feature-visual{min-height:420px} .feature-visual img{left:14%;width:70%;height:68%}
+  .motion{min-height:520px} .motion-art{transform:scale(.86);transform-origin:left top}
+  .about-grid{grid-template-rows:140px 140px}
+  .modal-card{grid-template-columns:1fr} .modal-photo{min-height:240px} .modal-content{padding:35px 25px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="header" id="header">
+  <a class="brand" href="#top"><span class="mark"><span class="z1"></span><span class="z2"></span><span class="dot"></span></span><span>zingarelho</span></a>
+  <nav class="nav" id="nav"><a href="#courses">Courses</a><a href="#schools">For schools</a><a href="#about">About</a><a href="#contact">Contact</a><a class="pill" href="#courses">Explore</a><span class="lang">EN</span></nav>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="hero-copy reveal">
+    <div class="kicker">Creative education<br>across Europe</div>
+    <h1>Aprender<br>criar<br>partilhar<br>crescer.</h1>
+    <p>Hands-on learning, maker culture and creative technology for people who want to build, test and share ideas.</p>
+    <div class="actions"><a class="btn primary" href="#courses">Explore courses <span class="arrow">→</span></a><button class="btn" id="motionBtn">See it move <span>▶</span></button></div>
+  </div>
+  <div class="hero-stage" id="heroStage">
+    <div class="g blue" data-depth=".035"></div>
+    <div class="g coral" data-depth="-.025"></div>
+    <div class="g yellow" data-depth=".06"></div>
+    <div class="g mint" data-depth="-.04"></div>
+    <div class="g lilac" data-depth=".02"></div>
+    <div class="g slash" data-depth="-.055"></div>
+    <img class="photo-main" src="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Hands-on maker learning">
+    <img class="photo-group" src="https://images.pexels.com/photos/9242822/pexels-photo-9242822.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Collaborative workshop">
+    <div class="hero-note">people · ideas · tools · communities</div>
+  </div>
+</section>
+
+<section class="principles reveal">
+  <div class="principle"><span class="mini-shape circle"></span><div><b>Learn</b><span>Hands-on, in practice.</span></div></div>
+  <div class="principle"><span class="mini-shape slant"></span><div><b>Make</b><span>Build skills by doing.</span></div></div>
+  <div class="principle"><span class="mini-shape half"></span><div><b>Connect</b><span>People and contexts.</span></div></div>
+  <div class="principle"><span class="mini-shape stairs"></span><div><b>Grow</b><span>Ideas into impact.</span></div></div>
+</section>
+
+<section class="section" id="courses">
+  <div class="section-head reveal">
+    <div><div class="kicker">Featured learning</div><h2>Different skills.<br>One visual system.</h2></div>
+    <div><p>A small selection of course directions. The prototype keeps the page light and lets each image and geometric gesture do more.</p><div class="track-controls" style="margin-top:18px"><button class="icon-btn" id="prevBtn">←</button><button class="icon-btn" id="nextBtn">→</button></div></div>
+  </div>
+  <div class="course-viewport reveal">
+    <div class="course-track" id="courseTrack">
+      <article class="course-card" style="--accent:var(--blue)" data-title="Creative Robotics" data-img="https://images.pexels.com/photos/7869086/pexels-photo-7869086.jpeg?auto=compress&cs=tinysrgb&w=900"><div class="course-img"><img src="https://images.pexels.com/photos/7869086/pexels-photo-7869086.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Robotics"></div><div class="course-body"><span class="tag">Making</span><h3>Creative Robotics</h3><p>Build, experiment and learn through physical computing.</p><button class="card-arrow">↗</button></div></article>
+      <article class="course-card" style="--accent:var(--yellow)" data-title="Maker Education" data-img="https://images.pexels.com/photos/9242822/pexels-photo-9242822.jpeg?auto=compress&cs=tinysrgb&w=1200"><div class="course-img"><img src="https://images.pexels.com/photos/9242822/pexels-photo-9242822.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Maker education"></div><div class="course-body"><span class="tag">Teaching</span><h3>Maker Education</h3><p>Hands-on methods for creative learning environments.</p><button class="card-arrow">↗</button></div></article>
+      <article class="course-card" style="--accent:var(--mint)" data-title="Design & Digital Fabrication" data-img="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=900"><div class="course-img"><img src="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Digital fabrication"></div><div class="course-body"><span class="tag">Digital making</span><h3>Design & Digital Fabrication</h3><p>Move from an idea to a physical prototype.</p><button class="card-arrow">↗</button></div></article>
+      <article class="course-card" style="--accent:var(--coral)" data-title="Creative Technology" data-img="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=1200"><div class="course-img"><img src="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Creative technology"></div><div class="course-body"><span class="tag">Experiment</span><h3>Creative Technology</h3><p>Tools, circuits and playful prototyping for education.</p><button class="card-arrow">↗</button></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="schools">
+  <div class="feature-copy reveal"><div class="kicker">For schools & organisations</div><h2>Mais competências.<br>Mais futuros.</h2><p>Training and partnership formats that bring creative technology into real learning contexts.</p><div class="actions"><a class="btn primary" href="#contact">Talk to us →</a><a class="btn" href="#about">How we work</a></div></div>
+  <div class="feature-visual" id="featureVisual"><div class="fq blue" data-depth=".03"></div><div class="fq coral" data-depth="-.04"></div><div class="fq mint" data-depth=".05"></div><div class="fq yellow" data-depth="-.025"></div><img src="https://images.pexels.com/photos/9242822/pexels-photo-9242822.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Group workshop"><div class="feature-caption">schools<br>workshops<br>projects<br>community</div></div>
+</section>
+
+<section class="motion" id="about">
+  <div class="motion-copy reveal"><div class="kicker" style="color:#aaa">Identity in motion</div><h2>Modular when still.<br>Cinematic when needed.</h2><p>The same basic geometry can shift, overlap and reveal photography without turning the interface into a visual effect demo.</p></div>
+  <div class="motion-art" id="motionArt"><div class="mg one" data-depth=".05"></div><div class="mg two" data-depth="-.04"></div><div class="mg three" data-depth=".075"></div><div class="mg four" data-depth="-.055"></div></div>
+</section>
+
+<section class="about">
+  <div class="reveal"><div class="kicker">About zingarelho</div><h2>Pessoas, ideias e ferramentas em movimento.</h2><p>A visual language built from simple pieces: strong type, generous white space, flat colour and geometric forms that can scale from a website to a poster, a sign or a course page.</p><a class="btn" href="#contact">Get in touch →</a></div>
+  <div class="about-grid reveal"><img class="a1" src="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Maker"><div class="color"></div><div class="shape-box"></div><img class="a2" src="https://images.pexels.com/photos/7868883/pexels-photo-7868883.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Outdoor making"></div>
+</section>
+</main>
+
+<footer class="footer" id="contact"><a class="brand" href="#top"><span class="mark"><span class="z1"></span><span class="z2"></span><span class="dot"></span></span><span>zingarelho</span></a><span>Interactive visual prototype · modular + kinetic direction · temporary imagery: Pexels</span><span>Contact / enrolment details to confirm</span></footer>
+</div>
+
+<div class="modal" id="modal"><div class="modal-card"><button class="close" id="closeModal">×</button><div class="modal-photo"><img id="modalImg" src="" alt=""></div><div class="modal-content"><div class="kicker">Course preview</div><h3 id="modalTitle"></h3><p>This is intentionally a light prototype. Final programme, dates, prices and enrolment details should be supplied from confirmed course content.</p><button class="btn primary" id="modalCta">Ask about this course →</button></div></div></div>
+
+<script>
+const header=document.getElementById('header');
+addEventListener('scroll',()=>header.classList.toggle('scrolled',scrollY>30),{passive:true});
+const menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('nav');
+menuBtn.addEventListener('click',()=>nav.classList.toggle('open'));
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+function reactiveStage(stage){
+  if(!stage) return;
+  const items=[...stage.querySelectorAll('[data-depth]')];
+  stage.addEventListener('pointermove',e=>{
+    const r=stage.getBoundingClientRect(); const x=e.clientX-r.left-r.width/2, y=e.clientY-r.top-r.height/2;
+    items.forEach(el=>{const d=parseFloat(el.dataset.depth); const base=el.classList.contains('slash')?' rotate(-45deg)':''; el.style.transform=`translate(${x*d}px,${y*d}px)${base}`;})
+  });
+  stage.addEventListener('pointerleave',()=>items.forEach(el=>el.style.transform=''));
+}
+reactiveStage(document.getElementById('heroStage')); reactiveStage(document.getElementById('featureVisual')); reactiveStage(document.getElementById('motionArt'));
+
+const reveals=[...document.querySelectorAll('.reveal')];
+const io=new IntersectionObserver(entries=>entries.forEach(en=>en.isIntersecting&&en.target.classList.add('in')),{threshold:.13}); reveals.forEach(el=>io.observe(el));
+
+const track=document.getElementById('courseTrack');
+document.getElementById('nextBtn').onclick=()=>track.scrollBy({left:360,behavior:'smooth'});
+document.getElementById('prevBtn').onclick=()=>track.scrollBy({left:-360,behavior:'smooth'});
+
+const modal=document.getElementById('modal'), modalTitle=document.getElementById('modalTitle'), modalImg=document.getElementById('modalImg');
+document.querySelectorAll('.course-card').forEach(card=>card.addEventListener('click',()=>{modalTitle.textContent=card.dataset.title; modalImg.src=card.dataset.img; modal.classList.add('open')}));
+function closeModal(){modal.classList.remove('open')} document.getElementById('closeModal').onclick=closeModal; modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.getElementById('modalCta').onclick=()=>{closeModal();document.getElementById('contact').scrollIntoView({behavior:'smooth'})};
+
+let pulse=false; document.getElementById('motionBtn').addEventListener('click',()=>{
+  pulse=!pulse; document.querySelectorAll('#heroStage .g').forEach((el,i)=>{el.style.transform=pulse?`translate(${(i-2)*11}px,${(i%2?1:-1)*9}px) rotate(${i*4-8}deg)`:''}); setTimeout(()=>{if(pulse)document.getElementById('about').scrollIntoView({behavior:'smooth'})},450);
+});
+</script>
+</body>
 </html>
